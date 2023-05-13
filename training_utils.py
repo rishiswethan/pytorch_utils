@@ -9,7 +9,7 @@ import traceback
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
-def evaluate(
+def _evaluate(
         model: torch.nn.Module,
         val_loader: torch.utils.data.DataLoader,
         device=device
@@ -24,7 +24,7 @@ def evaluate(
     return model.validation_epoch_end(outputs)
 
 
-def accuracy(
+def _accuracy(
         outputs: torch.Tensor,
         labels: torch.Tensor
 ):
@@ -45,7 +45,7 @@ def fit(
         device=device,
         num_retries_inner=10,
         max_retry=10,
-        evaluate=evaluate
+        evaluate=_evaluate
 ):
     """
     Meant to resemble the fit function in keras.
@@ -60,7 +60,9 @@ def fit(
     callbacks_function - A function that takes the model and returns a list of callbacks
     opt_func - The optimizer function to use
     device - The device to use
-    num_retries - Number of times to retry training if it fails
+    num_retries_inner - Number of times to retry training if it fails
+    max_retry - Maximum number of times to retry training if anything other than training_step fails, like dataloader
+    evaluate - The function to use for evaluation, defaults to _evaluate()
 
     Returns
     -------
@@ -176,7 +178,7 @@ class CustomModelBase(torch.nn.Module):
             self,
             class_weights=None,
             loss_function=F.cross_entropy,
-            accuracy_function=accuracy
+            accuracy_function=_accuracy
     ):
         super(CustomModelBase, self).__init__()
         self.class_weights = class_weights
