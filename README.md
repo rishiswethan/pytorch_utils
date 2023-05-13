@@ -7,7 +7,8 @@ example of how to use this package.
 ## Installation
  - `git clone https://github.com/rishiswethan/pytorch_utils.git`
  - `cd pytorch_utils`
- - `git checkout tags/v1.0.0`
+ - Checkout the latest release, or stick to the version that worked best with your project
+   - `git checkout tags/v1.0.1`
  - Install requirements.txt
    - `pip install -r requirements.txt`
  - Install pytorch 2.0 from [here](pytorch.org)
