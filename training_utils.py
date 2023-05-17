@@ -36,6 +36,7 @@ def _accuracy(
 def fit(
         epochs: int,
         lr: float,
+        weight_decay: float,
         model: torch.nn.Module,
         train_loader: torch.utils.data.DataLoader,
         val_loader: torch.utils.data.DataLoader,
@@ -54,6 +55,7 @@ def fit(
     ----------
     epochs - Set this to a high number and use callbacks to stop training early
     lr - Initial learning rate in case of a scheduler
+    weight_decay - Weight decay to be fed to the optimizer
     model - The model to train. Must inherit from CustomModelBase of this module
     train_loader - The training data loader
     val_loader - The validation data loader
@@ -70,11 +72,15 @@ def fit(
 
     """
 
-    history = []
-    optimizer = opt_func(model.parameters(), lr)
+    if weight_decay is not None:
+        optimizer = opt_func(model.parameters(), lr, weight_decay=weight_decay)
+    else:
+        optimizer = opt_func(model.parameters(), lr)
+
     model.to(device)
     defined_callbacks = None  # must be None so that it can be defined in the function when it is called for the first time
     num_retry = 0
+    history = []
 
     for epoch in range(epochs):
         model.train()  # Make sure the model is in training mode at each epoch, because it is set to eval() in evaluate()
