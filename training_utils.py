@@ -36,10 +36,10 @@ def _accuracy(
 def fit(
         epochs: int,
         lr: float,
-        weight_decay: float,
         model: torch.nn.Module,
         train_loader: torch.utils.data.DataLoader,
         val_loader: torch.utils.data.DataLoader,
+        weight_decay: float=None,
         callbacks_function=None,
         continue_training=False,
         opt_func=adam_opt,
