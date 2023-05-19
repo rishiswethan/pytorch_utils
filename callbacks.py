@@ -177,10 +177,11 @@ class Callbacks:
 
         # update the last best value or reduce the learning rate if the monitored metric did not improve for a while
         if improved_flag:
-            self._reduce_lr_last_best = monitor_value
-            self._reduce_lr_num_bad_epochs = 0
             if verbose:
                 print(f'{indicator_text} monitor value improved from {self._reduce_lr_last_best} to {monitor_value}')
+
+            self._reduce_lr_last_best = monitor_value
+            self._reduce_lr_num_bad_epochs = 0
 
         else:
             self._reduce_lr_num_bad_epochs += 1
