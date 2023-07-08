@@ -224,7 +224,7 @@ class HyperTunerUtils:
 
         self.tune_cnt += 1
 
-        return float(opt_result)
+        return opt_result
 
     def save_trial_to_csv(
             self,
