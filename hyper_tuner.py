@@ -208,6 +208,8 @@ class HyperTunerUtils:
             trial_details = {**kwargs, self.tune_target: opt_result}
             self.save_trial_to_csv(trial_details, self.tuner_csv_save_path)
 
+        opt_result = float(opt_result)
+
         # Save the best trail to a json file
         best_trail_details = self.get_best_trial_details_from_csv()
         print("\n----------------------------------")
@@ -217,11 +219,12 @@ class HyperTunerUtils:
         # Display the time taken for training
         print(f"\nTraining time: {_get_minute_second_string(time.time() - train_start_time)}")
         print(f"Total time: {_get_minute_second_string(time.time() - self.start_time)}")
+        print(f"Opt result: {opt_result}", type(opt_result))
         print("----------------------------------\n")
 
         self.tune_cnt += 1
 
-        return opt_result
+        return float(opt_result)
 
     def save_trial_to_csv(
             self,
