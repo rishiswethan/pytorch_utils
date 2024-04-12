@@ -282,6 +282,8 @@ def fit(
                 torch.cuda.empty_cache()
                 gc.collect()
 
+                traceback.print_exc()
+
                 num_retry += 1
                 if num_retry < max_retry:
                     continue
@@ -345,6 +347,7 @@ class CustomModelBase(torch.nn.Module):
             acc_func_name="accuracy",
             other_acc_metrics=["f1_score"],
             num_classes=5,
+            one_hot_labels_to_argmax=True,
     ):
         super(CustomModelBase, self).__init__()
         self.class_weights = class_weights
@@ -354,6 +357,7 @@ class CustomModelBase(torch.nn.Module):
         self.other_metrics_function = _calculate_other_metrics
         self.other_metrics = other_acc_metrics
         self.num_classes = num_classes
+        self.one_hot_labels_to_argmax = one_hot_labels_to_argmax
 
     def training_step(self, batch: list):
         """
@@ -373,7 +377,11 @@ class CustomModelBase(torch.nn.Module):
         images, labels = batch
         out = self(images)  # Generate predictions
 
-        loss = self.loss_function(out, labels, weight=self.class_weights)  # Calculate loss with class weights
+        if self.one_hot_labels_to_argmax:
+            # one hot labels must be converted to argmax for F.cross_entropy
+            labels_comp = torch.argmax(labels, dim=1)
+
+        loss = self.loss_function(out, labels_comp, weight=self.class_weights)  # Calculate loss with class weights
         acc = self.accuracy_function(out, labels)  # Calculate accuracy
 
         other_metrics = None
@@ -406,7 +414,11 @@ class CustomModelBase(torch.nn.Module):
         images, labels = batch
         out = self(images)  # Generate predictions
 
-        loss = self.loss_function(out, labels, weight=self.class_weights)  # Calculate loss with class weights
+        if self.one_hot_labels_to_argmax:
+            # one hot labels must be converted to argmax for F.cross_entropy
+            labels_comp = torch.argmax(labels, dim=1)
+
+        loss = self.loss_function(out, labels_comp, weight=self.class_weights)  # Calculate loss with class weights
         acc = self.accuracy_function(out, labels)  # Calculate accuracy
 
         other_metrics = None

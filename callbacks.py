@@ -117,6 +117,7 @@ class Callbacks:
                 print(f'{indicator_text} monitor value improved from {self._checkpoint_last_best} to {monitor_value}')
 
             self._checkpoint_last_best = monitor_value
+            os.makedirs(os.path.dirname(self._model_save_path), exist_ok=True)
             torch.save(model.state_dict(), self._model_save_path)
         else:
             if verbose:
