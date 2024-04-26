@@ -82,6 +82,25 @@ def _precision_score(args_dict=None):
     return precision_score
 
 
+def _precision_score_single_class(args_dict=None):
+    num_classes = args_dict["num_classes"]
+    specific_class_index = args_dict["specific_class_index"]  # Index of the class for which to compute precision
+
+    def precision_score(outputs: torch.Tensor, labels: torch.Tensor):
+        preds = torch.argmax(outputs, dim=1)
+        labels = torch.argmax(labels, dim=1)
+
+        # Initialize precision metric for all classes without averaging
+        precision = torchmetrics.Precision(num_classes=num_classes, average=None, task='multiclass').to(device)
+        precision_all_classes = precision(preds, labels)
+
+        # Return precision for the specified class
+        return precision_all_classes[specific_class_index]
+
+    return precision_score
+
+
+
 def _recall_score(args_dict=None):
     num_classes = args_dict["num_classes"]
     def recall_score(outputs: torch.Tensor, labels: torch.Tensor):
@@ -164,6 +183,7 @@ def get_metric(metric_name="accuracy", args_dict=None):
         "f1_score": _f1_score,
         "quadratic_weighted_kappa": _quadratic_weighted_kappa,
         "precision_score": _precision_score,
+        "precision_score_single_class": _precision_score_single_class,  # Requires "specific_class_index" in args_dict
         "recall_score": _recall_score,
         "confusion_matrix_elements_multiclass": _confusion_matrix_elements_multiclass,
     }
